@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AutoTypR</title>
+  <meta charset="utf-8">
+  <meta name="description" content="AutoTypR">
+  <meta name="author" content="(Use arrow keys to navigate)">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="libraries/widgets/bootstrap/css/bootstrap.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  
+  <hgroup class="auto-fadein">
+    <h1>AutoTypR</h1>
+    <h2>An app to help you type faster</h2>
+    <p>(Use arrow keys to navigate)<br/></p>
+  </hgroup>
+  
+  <article></article>  
+  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  
+  <article data-timings="">
+    <!-- Change background of title page 
+ https://stackoverflow.com/a/20876817
+ -->
+
+<style>
+.title-slide {
+  background-color: #FFFFFF; 
+}
+  strong {
+  font-weight: bold;
+  
+}
+.title-slide hgroup > h1{
+  color: #99DDFF
+}
+.title-slide hgroup > h2{
+  color: #99DDFF
+}
+
+slide:not(.segue) h2{color: #99DDFF}
+</style>
+
+<h2>Features of AutoTypR</h2>
+
+<ul>
+<li>Automatically suggest the next word, based on the text typed so far</li>
+<li>Improves your workflow 
+
+<ul>
+<li>Faster typing </li>
+<li>Fewer errors and typos </li>
+<li>More comfort on devices without a proper keyboard</li>
+</ul></li>
+<li>Runs on smartphones and mobile devices
+
+<ul>
+<li>Needs <strong>less than 200MB of RAM</strong></li>
+<li>The total app size is <strong>only 25MB</strong> </li>
+</ul></li>
+<li>Incredibly fast
+
+<ul>
+<li>The app is optimised for speed </li>
+<li>Get suggestions <strong>in real time</strong> </li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+  
+</slide>
+
+<slide class="" id="slide-2" style="background:;">
+  
+  <hgroup>
+    <h2>How does it work?</h2>
+  </hgroup>
+  
+  <article data-timings="">
+    <ul>
+<li>The app is based on a <a href="https://www.aclweb.org/anthology/D07-1090.pdf">stupid backoff</a> N-gram language model
+
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/N-gram">N-grams</a> are contiguous sequences of N words </li>
+<li><em>Stupid backoff</em> assigns a score to every word \(W_N\):
+\[S(W_N|W_{(N-1)},...,W_1) = \begin{cases} \frac{f(W_N,W_{(N-1)},...,W_1)}{f(W_{(N-1)},...,W_1)} & f(W_N,...,W_1) > 0 \\ 
+0.4*S(W_N|W_{(N-1)},...,W_2) & \text{else}  \end{cases}\]
+(\(f\) is the frequency with which the sequence occurs in the text)</li>
+<li>For unigrams \(S(W_N)= f(W_N)/\text{(number of words in the training text)}\) </li>
+<li>The sequences and word scores are computed for \(N=1, ..., 6\)</li>
+<li>When a user enters a sequence of words, the model suggests the corresponding word with the highest \(S\). </li>
+</ul></li>
+<li>The model was trained on around 550MB of text from <a href="https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip">blogs, news articles, and tweets</a></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+  
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  
+  <hgroup>
+    <h2>Implementation details</h2>
+  </hgroup>
+  
+  <article data-timings="">
+    <ul>
+<li>Tricks to speed up the computations
+
+<ul>
+<li>N-grams occurring less often than a given threshold \(T\) are not considered 
+
+<ul>
+<li>For \(N > 2\) we use \(T=3\)</li>
+<li>\(T=2\)  is used for \(N=2\)</li>
+</ul></li>
+<li>Word scores and sequences are pre-computed</li>
+<li>The <strong>data.table</strong> library is used for fast lookup </li>
+<li>For every sequence only the five words with the largest score \(S\) are stored</li>
+</ul></li>
+<li>Swear words are censored in the training text and in the output of the app</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+  
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  
+  <hgroup>
+    <h2>See for yourself!</h2>
+  </hgroup>
+  
+  <article data-timings="">
+    <ul>
+<li>A demo <a href="https://teloadrhin.shinyapps.io/AutoTypR">web app</a> of AutoTypR is available</li>
+<li>How to use the app
+
+<ul>
+<li>Type words in the input box 
+(<strong>make sure to leave a space after the last word</strong>)</li>
+<li>The app will show a suggestion for the next word </li>
+<li>A table with the top five words will be shown 
+<div style='text-align: center;'>
+<img width='620' src='AutoTypR.png' />
+</div></li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+  
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='NA'>
+         1
+      </a>
+    </li>
+    
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='How does it work?'>
+         2
+      </a>
+    </li>
+    
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Implementation details'>
+         3
+      </a>
+    </li>
+    
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='See for yourself!'>
+         4
+      </a>
+    </li>
+    
+    </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  <script src="libraries/widgets/bootstrap/js/bootstrap.min.js"></script>
+<script src="libraries/widgets/bootstrap/js/bootbox.min.js"></script>
+
+  <script>  
+  $(function (){ 
+    $("#example").popover(); 
+    $("[rel='tooltip']").tooltip(); 
+  });  
+  </script>  
+  <!-- MathJax: Fall back to local if CDN offline but local image fonts are not supported (saves >100MB) -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        processEscapes: true
+      }
+    });
+  </script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <!-- <script src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script> -->
+  
+<script>window.MathJax || document.write('<script type="text/x-mathjax-config">MathJax.Hub.Config({"HTML-CSS":{imageFont:null}});<\/script><script src="libraries/widgets/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><\/script>')
+</script>
+
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
